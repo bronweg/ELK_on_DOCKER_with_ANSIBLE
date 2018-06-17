@@ -4,6 +4,6 @@
     detach: yes
     pull: no
     hostname: kibana
-    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Filebeat/files/kibana.yml:/usr/share/filebeat/config/kibana.yml
+    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Kibana/files/kibana.yml:/usr/share/kibana/config/kibana.yml
     networks:
       - name: elk-network
