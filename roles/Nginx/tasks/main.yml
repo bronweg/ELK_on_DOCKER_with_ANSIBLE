@@ -5,6 +5,6 @@
     pull: no
     published_ports: 80:80
     hostname: nginx
-    volumes: /root/playbooks/roles/Nginx/files/nginx.conf:/etc/nginx/nginx.conf:ro,/root/playbooks/roles/Nginx/files/passwords:/etc/nginx/passwords:rw
+    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Nginx/files/nginx.conf:/etc/nginx/nginx.conf:ro,/root/ELK_on_DOCKER_with_ANSIBLE/roles/Nginx/files/passwords:/etc/nginx/passwords:rw
     networks:
       - name: elk-network

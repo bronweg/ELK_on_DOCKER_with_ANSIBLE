@@ -4,6 +4,6 @@
     detach: yes
     pull: no
     hostname: logstash
-    volumes: /root/playbooks/roles/Logstash/files/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Logstash/files/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     networks:
       - name: elk-network
