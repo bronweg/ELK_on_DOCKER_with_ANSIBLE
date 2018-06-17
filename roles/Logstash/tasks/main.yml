@@ -6,4 +6,4 @@
     hostname: logstash
     volumes: /root/playbooks/roles/Logstash/files/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     networks:
-      - name: pipl-network
+      - name: elk-network

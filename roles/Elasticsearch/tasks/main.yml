@@ -7,4 +7,4 @@
     published_ports: 9200:9200,9300:9300
     env: discovery.type=single-node
     networks:
-      - name: pipl-network
+      - name: elk-network

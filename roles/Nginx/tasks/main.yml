@@ -7,4 +7,4 @@
     hostname: nginx
     volumes: /root/playbooks/roles/Nginx/files/nginx.conf:/etc/nginx/nginx.conf:ro,/root/playbooks/roles/Nginx/files/passwords:/etc/nginx/passwords:rw
     networks:
-      - name: pipl-network
+      - name: elk-network

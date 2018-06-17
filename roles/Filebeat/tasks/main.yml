@@ -7,4 +7,4 @@
     volumes: /root/playbooks/roles/Filebeat/files/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,/var/lib/docker/containers:/hostfs/var/lib/docker/containers:ro
     env: LOG_LEVEL=DEBUG
     networks:
-      - name: pipl-network
+      - name: elk-network
