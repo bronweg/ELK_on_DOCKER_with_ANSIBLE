@@ -1,0 +1,9 @@
+- docker_container:
+    name: kibana
+    image: docker.elastic.co/kibana/kibana:6.3.0
+    detach: yes
+    pull: no
+    hostname: kibana
+    volumes: /root/playbooks/roles/Filebeat/files/kibana.yml:/usr/share/filebeat/config/kibana.yml
+    networks:
+      - name: pipl-network
