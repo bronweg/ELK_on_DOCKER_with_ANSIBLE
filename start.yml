@@ -1,8 +1,8 @@
 ---
 - hosts: localhost
   roles:
-     - Elasticsearch
-     - Filebeat
-     - Logstash
-     - Kibana
-     - Nginx
+    - Elasticsearch
+    - Filebeat
+    - Logstash
+    - Kibana
+    - Nginx

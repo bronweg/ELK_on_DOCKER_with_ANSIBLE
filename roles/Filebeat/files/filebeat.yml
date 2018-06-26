@@ -1,7 +1,13 @@
----
 filebeat.inputs:
 - type: log
   paths:
   - '/hostfs/var/lib/docker/containers/*/*.log'
 output.logstash:
   hosts: ["logstash:5044"]
+logging.level: debug
+logging.to_files: true
+logging.files:
+  path: /usr/share/filebeat/logs/filebeat.log
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
