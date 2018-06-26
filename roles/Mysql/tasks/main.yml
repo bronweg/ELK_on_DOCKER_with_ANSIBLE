@@ -1,0 +1,31 @@
+- docker_container:
+    name: mysql-master
+    image: mysql/mysql-server
+    detach: yes
+    pull: no
+    hostname: mysql-master
+    env: MYSQL_ROOT_PASSWORD=1234
+    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Mysql_Master/files/install_script.sh:/etc/rc6.d/install_script.sh:rw
+    networks:
+      - name: elk-network
+
+- add_host:
+    name: mysql-master
+    ansible_connection: docker
+  changed_when: false
+
+- delegate_to: mysql-master
+  yum:
+    name: git
+    state: latest
+
+- delegate_to: mysql-master
+  git:
+    dest: /test_db
+    repo: https://github.com/datacharmer/test_db.git
+    clone: yes
+
+- delegate_to: mysql-master
+  command: /usr/bin/mysql -u root -p"1234" -e "source /test_db/employees.sql"
+  args:
+    chdir: /test_db
