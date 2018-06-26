@@ -1,4 +1,5 @@
 ---
 - hosts: localhost
   roles:
-    - Mysql
+    - { role: Mysql, node: mysql-master }
+    - { role: Mysql, node: mysql-slave  }
