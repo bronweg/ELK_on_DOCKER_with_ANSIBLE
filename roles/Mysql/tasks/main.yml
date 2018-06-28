@@ -85,7 +85,7 @@
     name: repl
     host: "%"
     password: "1234"
-    priv: "*.*:REPLICATION CLIENT,GRANT"
+    priv: "*.*:REPLICATION SLAVE,GRANT"
     state: present
   when: node == "mysql-master"
 
