@@ -4,7 +4,7 @@
     detach: yes
     pull: no
     hostname: filebeat
-    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Filebeat/files/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw,/var/lib/docker/containers:/hostfs/var/lib/docker/containers:ro
+    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Filebeat/files/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw,/var/lib/docker/containers:/hostfs/var/lib/docker/containers:ro,/var/log:/hostfs/var/log:ro
     #env: LOG_LEVEL=DEBUG
     networks:
       - name: elk-network

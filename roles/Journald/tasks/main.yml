@@ -1,0 +1,13 @@
+  - lineinfile:
+      path: /etc/systemd/journald.conf
+      regexp: '.*ForwardToSyslog.*'
+      line: 'ForwardToSyslog=yes'
+      state: present
+
+  - systemd:
+      name: systemd-journald
+      state: restarted
+
+  - systemd:
+      name: rsyslog
+      state: restarted
