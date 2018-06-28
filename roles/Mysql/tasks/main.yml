@@ -1,23 +1,50 @@
 - docker_container:
     name: "{{ node }}"
-    image: mysql/mysql-server
+    image: centos/mariadb
     detach: yes
+    #published_ports: 3306:3306
     pull: no
     hostname: "{{ node }}"
     env: MYSQL_ROOT_PASSWORD=1234
-    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Mysql/files/install_script.sh:/etc/rc6.d/install_script.sh:rw
     networks:
       - name: elk-network
 
 - add_host:
-    name: "{{ node }}"
+    name: "{{ item }}"
     ansible_connection: docker
+    ansible_user: root
+    ansible_become: yes
   changed_when: false
+  with_items:
+    - mysql-master
+    - mysql-slave
 
 - delegate_to: "{{ node }}"
   yum:
-    name: git
+    name:
+      - git
+      - mysql-devel
+      - python-devel
+      - python-setuptools
+      - gcc
+      - wget
     state: latest
+
+- delegate_to: "{{ node }}"
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /get-pip.py
+    mode: 0644
+
+- delegate_to: "{{ node }}"
+  command: python /get-pip.py
+
+- delegate_to: "{{ node }}"
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - wheel
+    - MySQL-python
 
 - delegate_to: "{{ node }}"
   git:
@@ -29,3 +56,68 @@
   command: /usr/bin/mysql -u root -p"1234" -e "source /test_db/employees.sql"
   args:
     chdir: /test_db
+
+- delegate_to: "{{ node }}"
+  lineinfile:
+    path: /etc/my.cnf
+    insertbefore: '^\[mysqld_safe\]'
+    line: server_id = {{ id }}
+
+- delegate_to: "{{ node }}"
+  lineinfile:
+    path: /etc/my.cnf
+    insertbefore: '^\[mysqld_safe\]'
+    line: "{{ item }}"
+  with_items:
+    - log-bin
+    - log-basename={{ node }}
+  when: node == "mysql-master"
+
+- docker_container:
+    name: "{{ node }}"
+    state: started
+    restart: yes
+
+- delegate_to: "{{ node }}"
+  mysql_user:
+    login_user: root
+    login_password: "1234"
+    name: repl
+    host: "%"
+    password: "1234"
+    priv: "*.*:REPLICATION CLIENT,GRANT"
+    state: present
+  when: node == "mysql-master"
+
+- delegate_to: mysql-master
+  mysql_replication:
+    login_user: root
+    login_password: "1234"
+    mode: getmaster
+  register: replication
+  when: node == "mysql-slave"
+
+- add_host:
+    name: "replication_value_holder"
+    replication_log_file: "{{ replication.File }}"
+    replication_log_pos:  "{{ replication.Position }}"
+  when: node == "mysql-slave"
+
+- delegate_to: "{{ node }}"
+  mysql_replication:
+    login_user: root
+    login_password: "1234"
+    mode: changemaster
+    master_host: mysql-master
+    master_user: repl
+    master_password: "1234"
+    master_log_file: "{{ hostvars['replication_value_holder']['replication_log_file'] }}"
+    master_log_pos:  "{{ hostvars['replication_value_holder']['replication_log_pos'] }}"
+  when: node == "mysql-slave"
+
+- delegate_to: "{{ node }}"
+  mysql_replication:
+    login_user: root
+    login_password: "1234"
+    mode: startslave
+  when: node == "mysql-slave"
