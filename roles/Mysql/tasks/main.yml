@@ -5,7 +5,7 @@
     #published_ports: 3306:3306
     pull: no
     hostname: "{{ node }}"
-    env: MYSQL_ROOT_PASSWORD=1234
+    env: MYSQL_ROOT_PASSWORD={{ password }}
     networks:
       - name: elk-network
 
@@ -22,7 +22,6 @@
 - delegate_to: "{{ node }}"
   yum:
     name:
-      - git
       - mysql-devel
       - python-devel
       - python-setuptools
@@ -47,17 +46,6 @@
     - MySQL-python
 
 - delegate_to: "{{ node }}"
-  git:
-    dest: /test_db
-    repo: https://github.com/datacharmer/test_db.git
-    clone: yes
-
-- delegate_to: "{{ node }}"
-  command: /usr/bin/mysql -u root -p"1234" -e "source /test_db/employees.sql"
-  args:
-    chdir: /test_db
-
-- delegate_to: "{{ node }}"
   lineinfile:
     path: /etc/my.cnf
     insertbefore: '^\[mysqld_safe\]'
@@ -71,6 +59,13 @@
   with_items:
     - log-bin
     - log-basename={{ node }}
+    - binlog-ignore-db=test
+    - binlog-ignore-db=information_schema
+    - binlog-ignore-db=mysql
+    - replicate-ignore-db=test
+    - replicate-ignore-db=information_schema
+    - replicate-ignore-db=mysql
+    - relay-log=mysqld-relay-bin
   when: node == "mysql-master"
 
 - docker_container:
@@ -81,10 +76,10 @@
 - delegate_to: "{{ node }}"
   mysql_user:
     login_user: root
-    login_password: "1234"
+    login_password: "{{ password }}"
     name: repl
     host: "%"
-    password: "1234"
+    password: "{{ password }}"
     priv: "*.*:REPLICATION SLAVE,GRANT"
     state: present
   when: node == "mysql-master"
@@ -92,7 +87,7 @@
 - delegate_to: mysql-master
   mysql_replication:
     login_user: root
-    login_password: "1234"
+    login_password: "{{ password }}"
     mode: getmaster
   register: replication
   when: node == "mysql-slave"
@@ -106,11 +101,11 @@
 - delegate_to: "{{ node }}"
   mysql_replication:
     login_user: root
-    login_password: "1234"
+    login_password: "{{ password }}"
     mode: changemaster
     master_host: mysql-master
     master_user: repl
-    master_password: "1234"
+    master_password: "{{ password }}"
     master_log_file: "{{ hostvars['replication_value_holder']['replication_log_file'] }}"
     master_log_pos:  "{{ hostvars['replication_value_holder']['replication_log_pos'] }}"
   when: node == "mysql-slave"
@@ -118,6 +113,6 @@
 - delegate_to: "{{ node }}"
   mysql_replication:
     login_user: root
-    login_password: "1234"
+    login_password: "{{ password }}"
     mode: startslave
   when: node == "mysql-slave"
