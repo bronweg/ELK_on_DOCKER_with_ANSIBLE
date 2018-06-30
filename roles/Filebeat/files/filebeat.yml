@@ -2,7 +2,7 @@ filebeat.inputs:
 - type: log
   paths:
   - '/hostfs/var/lib/docker/containers/*/*.log'
-  #- '/hostfs/var/log/*'
+  - '/hostfs/var/log/*'
 output.logstash:
   hosts: ["logstash:5044"]
 logging.level: debug
