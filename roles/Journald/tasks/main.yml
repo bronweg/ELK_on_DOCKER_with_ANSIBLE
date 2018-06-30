@@ -5,9 +5,8 @@
       state: present
 
   - systemd:
-      name: systemd-journald
+      name: "{{ item }}"
       state: restarted
-
-  - systemd:
-      name: rsyslog
-      state: restarted
+    with_items:
+    - systemd-journald
+    - rsyslog
