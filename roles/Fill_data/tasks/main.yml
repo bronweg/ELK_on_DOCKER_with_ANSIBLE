@@ -1,0 +1,31 @@
+- add_host:
+    name: "{{ node }}"
+    ansible_connection: docker
+    ansible_user: root
+    ansible_become: yes
+  changed_when: false
+
+- delegate_to: "{{ node }}"
+  yum:
+    name:
+      - git
+    state: latest
+
+- delegate_to: "{{ node }}"
+  git:
+    dest: /test_db
+    repo: https://github.com/datacharmer/test_db.git
+    clone: yes
+
+- delegate_to: "{{ node }}"
+  command: /usr/bin/mysql -u root -p"{{ password }}" -e "source /test_db/employees.sql"
+  args:
+    chdir: /test_db
+
+#- delegate_to: "{{ node }}"
+#  mysql_db:
+#    login_user: root
+#    login_password: "{{ password }}"
+#    state: import
+#    name: all
+#    target: /test_db/employees.sql
