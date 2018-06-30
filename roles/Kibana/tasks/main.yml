@@ -1,9 +1,13 @@
+- set_fact:
+    kibana_conf: "{{ role_path }}/files/kibana.yml:/usr/share/kibana/config/kibana.yml"
+
 - docker_container:
     name: kibana
     image: docker.elastic.co/kibana/kibana:6.3.0
     detach: yes
     pull: no
     hostname: kibana
-    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Kibana/files/kibana.yml:/usr/share/kibana/config/kibana.yml
+    volumes:
+      - "{{ kibana_conf }}"
     networks:
       - name: elk-network

@@ -1,3 +1,40 @@
+- set_fact:
+    private_key: "{{ role_path }}/files/nginx.pem"
+    cert_file: "{{ role_path }}/files/nginx.crt"
+    csr_file: "{{ role_path }}/files/nginx.csr"
+    nginx_conf: "{{ role_path }}/files/nginx.conf:/etc/nginx/nginx.conf:rw"
+    passwd_file: "{{ role_path }}/files/passwords:/etc/nginx/passwords:rw"
+    mounted_private_key: "{{ role_path }}/files/nginx.pem:/etc/nginx/nginx.pem:ro"
+    mounted_cert_file: "{{ role_path }}/files/nginx.crt:/etc/nginx/nginx.crt:ro"
+
+- yum:
+    name:
+      - epel-release
+      - python
+      - python-pip
+
+- pip:
+    name: "{{ item }}"
+  with_items:
+    - wheel
+    - pyOpenSSL
+
+- openssl_privatekey:
+    path: "{{ private_key }}"
+
+- openssl_csr:
+    path: "{{ csr_file }}"
+    privatekey_path: "{{ private_key }}"
+    common_name: nginx
+
+- openssl_certificate:
+    path: "{{ cert_file }}"
+    privatekey_path: "{{ private_key }}"
+    csr_path: "{{ csr_file }}"
+    provider: selfsigned
+
+- wait_for: timeout=30
+
 - docker_container:
     name: nginx
     image: nginx
@@ -5,6 +42,10 @@
     pull: no
     published_ports: 80:80
     hostname: nginx
-    volumes: /root/ELK_on_DOCKER_with_ANSIBLE/roles/Nginx/files/nginx.conf:/etc/nginx/nginx.conf:rw,/root/ELK_on_DOCKER_with_ANSIBLE/roles/Nginx/files/passwords:/etc/nginx/passwords:rw,/root/ELK_on_DOCKER_with_ANSIBLE/roles/Nginx/files/cert.key:/etc/nginx/cert.key:ro,/root/ELK_on_DOCKER_with_ANSIBLE/roles/Nginx/files/cert.crt:/etc/nginx/cert.crt:ro
+    volumes:
+      - "{{ nginx_conf }}"
+      - "{{ passwd_file }}"
+      - "{{ mounted_private_key }}"
+      - "{{ mounted_cert_file }}"
     networks:
       - name: elk-network
