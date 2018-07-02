@@ -1,5 +1,5 @@
 ---
 - hosts: localhost
   roles:
-    - { role: Journald }
-    - { role: SSL }
+    - Journald
+    - Cerebro

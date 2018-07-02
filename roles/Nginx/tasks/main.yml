@@ -40,7 +40,7 @@
     image: nginx
     detach: yes
     pull: no
-    published_ports: 80:80
+    published_ports: 80:80,443:443
     hostname: nginx
     volumes:
       - "{{ nginx_conf }}"
