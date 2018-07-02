@@ -1,0 +1,9 @@
+- docker_container:
+    name: cerebro
+    image: yannart/cerebro
+    detach: yes
+    pull: no
+    hostname: cerebro
+    published_ports: 9000:9000
+    networks:
+      - name: elk-network
