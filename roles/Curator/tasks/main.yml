@@ -1,0 +1,13 @@
+- docker_container:
+    name: curator
+    image: anjia0532/docker-curator
+    detach: yes
+    pull: no
+    hostname: curator
+    env:
+      UNIT_COUNT: 7
+      UNIT: days
+      ES_HOST: elasticsearch
+      TZ: IDT
+    networks:
+      - name: elk-network
