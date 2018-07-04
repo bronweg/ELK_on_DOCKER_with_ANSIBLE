@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  roles:
+    - Elasticsearch
+    - Journald
+    - Filebeat
+    - Logstash
+    - Kibana
+    - Cerebro
+    - Nginx
+    - Curator

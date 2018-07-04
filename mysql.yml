@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  roles:
+    - { role: Mysql, node: mysql-master, id: 1, password: 1234 }
+    - { role: Mysql, node: mysql-slave,  id: 2, password: 1234 }
+    - { role: Fill_data, node: mysql-master,    password: 1234 }
